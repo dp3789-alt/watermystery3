@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>물때 3</title>
+<meta name="description" content="거짓말을 알아보는 자문위원이 사건을 해결하는 추리 게임, 물때 3편.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=IBM+Plex+Sans+KR:wght@400;500;600&family=Nanum+Gothic+Coding:wght@400;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+  <header class="topbar">
+    <div class="brand">물때<span>3</span></div>
+    <div class="where" id="where"></div>
+    <div class="tools">
+      <button class="tbtn" id="btn-save">저장</button>
+      <button class="tbtn" id="btn-load">불러오기</button>
+      <button class="tbtn" id="btn-title" hidden>타이틀</button>
+    </div>
+  </header>
+  <main id="stage"></main>
+</div>
+<script src="js/scenario.js"></script>
+<script src="js/engine.js"></script>
+</body>
+</html>
