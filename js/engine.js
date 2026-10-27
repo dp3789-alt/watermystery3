@@ -174,7 +174,7 @@
     const jl = judgesLeft();
     const judgeTxt = d.judges === 0 ? '사용 불가' : (jl === Infinity ? '무제한' : `${jl}회 남음`);
     return `<div class="hud">
-      <div class="case-name"><small>${esc(d.act)} · ${esc(d.place)}</small>${esc(d.title)}</div>
+      <div class="case-name"><small>${esc(d.date)} · ${esc(d.act)} · ${esc(d.place)}</small>${esc(d.title)}</div>
       <div class="clock"><div class="now">${clockText(C.time)}</div><div class="left">남은 시간 ${remaining}분</div></div>
       <div class="meter" aria-label="35분 중 ${C.time}분 사용">${meter}</div>
       <div class="stats">
@@ -216,7 +216,7 @@
   }
 
   function renderCase() {
-    setWhere(`${C.d.act} · ${C.d.place}`);
+    setWhere(`${C.d.date} · ${C.d.act} · ${C.d.place}`);
     if (C.phase === 'prep') renderPrep();
     else if (C.phase === 'ask') renderAsk();
     else if (C.phase === 'note') renderNote();
