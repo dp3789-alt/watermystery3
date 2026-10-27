@@ -97,12 +97,26 @@ button:focus-visible, .stmt:focus-visible { outline: 2px solid var(--tide); outl
 @keyframes drift { to { transform: translateX(-50%); } }
 
 /* ── 장면 ── */
-.scene { flex: 1; display: flex; flex-direction: column; gap: 16px; cursor: pointer; user-select: none; min-height: 60vh; }
+.scene { flex: 1; display: flex; flex-direction: column; gap: 14px; cursor: pointer; user-select: none; }
 .scene .place {
   font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; color: var(--tide);
   text-transform: uppercase;
 }
-.scene .view { flex: 1; display: grid; place-items: center; min-height: 160px; }
+.frame, .banner {
+  position: relative; overflow: hidden; border: 1px solid var(--line); border-radius: 4px; background: var(--bg2);
+}
+.frame { aspect-ratio: 12 / 5; min-height: 180px; width: 100%; }
+.frame .bg, .banner .bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.frame .portrait { position: absolute; bottom: -2%; right: 6%; height: 100%; width: auto; filter: drop-shadow(0 4px 18px rgba(0,0,0,.45)); }
+.frame .portrait.idle { filter: brightness(.72) drop-shadow(0 4px 18px rgba(0,0,0,.45)); }
+.frame .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; }
+.frame .overlay.left { place-items: center start; padding-right: 40%; }
+.frame.is-card .overlay { background: rgba(8, 11, 12, .35); }
+.banner { height: clamp(140px, 22vw, 210px); margin-bottom: 16px; }
+.banner .portrait { position: absolute; bottom: -4%; left: 50%; transform: translateX(-50%); height: 104%; width: auto; filter: drop-shadow(0 4px 18px rgba(0,0,0,.5)); }
+.banner .portrait.swap { animation: swap .5s ease-out; }
+@keyframes swap { 0% { opacity: .2; transform: translateX(-50%) translateY(6px); } 100% { opacity: 1; transform: translateX(-50%); } }
+@media (max-width: 560px) { .frame .overlay.left { padding-right: 16px; place-items: start; } .frame .portrait { right: 2%; } }
 .card { text-align: center; }
 .card .act { font-family: var(--display); font-weight: 800; font-size: clamp(56px, 12vw, 104px); line-height: 1; }
 .card .sub { margin-top: 12px; color: var(--muted); letter-spacing: 0.3em; font-size: 15px; }
@@ -143,7 +157,6 @@ button:focus-visible, .stmt:focus-visible { outline: 2px solid var(--tide); outl
 .meter i.over { background: var(--lie); }
 .stats { grid-column: 1 / -1; display: flex; gap: 18px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
 .stats b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
-.stats .warn b { color: var(--lie); }
 
 .tip {
   border-left: 3px solid var(--tide); background: var(--bg2); padding: 10px 14px; margin-bottom: 16px;
@@ -184,8 +197,6 @@ button:focus-visible, .stmt:focus-visible { outline: 2px solid var(--tide); outl
 .transcript { display: grid; gap: 10px; margin-bottom: 16px; }
 .qa { border-left: 2px solid var(--line); padding-left: 12px; }
 .qa .q { color: var(--muted); font-size: 13.5px; }
-.qa .q.trap::after { content: ' · 필요한 질문 +1'; color: var(--lie); font-size: 12px; }
-.qa .q.detour::after { content: ' · 돌려 묻기 · 필요한 질문 +1'; color: var(--lie); font-size: 12px; }
 .qa .a { font-size: 15.5px; }
 .qa.latest { border-left-color: var(--tide); }
 .qopts { display: grid; gap: 8px; }
@@ -286,6 +297,6 @@ button:focus-visible, .stmt:focus-visible { outline: 2px solid var(--tide); outl
 .modal .msg { font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 1.4em; }
 
 @media (prefers-reduced-motion: reduce) {
-  .tide svg, .box .next, .opinion .caret { animation: none; }
+  .tide svg, .box .next, .opinion .caret, .banner .portrait.swap { animation: none; }
   .pulse { animation: none; box-shadow: inset 0 0 120px rgba(196, 87, 63, .45); }
 }

@@ -50,23 +50,48 @@
     return '';
   }
 
+  function sceneBg(lines, i) {
+    for (let k = i; k >= 0; k--) {
+      if (lines[k].card) return 'dark';
+      if (lines[k].bg) return lines[k].bg;
+      if (lines[k].place) return ART.bgKey(lines[k].place);
+    }
+    return 'dark';
+  }
+
+  // 지금 말하는 인물. 서술이나 주인공 대사일 때는 같은 장소에서 마지막으로 말한 인물을 계속 보여 준다.
+  function sceneSpeaker(lines, i) {
+    for (let k = i; k >= 0; k--) {
+      const l = lines[k];
+      if (l.s && ART.has(l.s)) return { name: l.s, e: l.e === undefined ? -1 : l.e, talking: k === i };
+      if (l.card || (k < i && l.place)) return null;
+      if (k === i && l.place && !l.s) return null;
+    }
+    return null;
+  }
+
   function renderScene() {
     const ln = S.lines[S.i];
     const place = placeAt(S.lines, S.i);
     setWhere(place);
-    let view = '';
+    const bgKey = sceneBg(S.lines, S.i);
+    const bg = bgKey === 'car' ? ART.background('station', { car: true }) : ART.background(bgKey);
+    let overlay = '';
+    let figure = '';
     let box = '';
     if (ln.card) {
-      view = `<div class="card"><div class="act">${esc(ln.card)}</div><div class="sub">${esc(ln.sub || '')}</div></div>`;
+      overlay = `<div class="card"><div class="act">${esc(ln.card)}</div><div class="sub">${esc(ln.sub || '')}</div></div>`;
     } else {
-      if (ln.news) view = `<div class="news"><span class="ntag">뉴스</span><h2>${esc(ln.news)}</h2></div>`;
+      const sp = sceneSpeaker(S.lines, S.i);
+      if (sp) figure = ART.portrait(sp.name, sp.e, { cls: sp.talking ? 'talking' : 'idle' });
+      if (ln.news) overlay = `<div class="news"><span class="ntag">뉴스</span><h2>${esc(ln.news)}</h2></div>`;
       const who = ln.s ? `<div class="who${ln.s === ME ? ' me' : ''}">${esc(ln.s)}</div>` : (ln.think ? `<div class="who me">${ME} · 속마음</div>` : '');
       const cls = ln.think ? 'think' : (ln.s ? '' : 'narr');
       box = `<div class="box">${who}<p class="${cls}" id="line-text"></p><span class="next" aria-hidden="true">▼</span></div>`;
     }
     stage.innerHTML = `<div class="scene" id="scene" role="button" tabindex="0" aria-label="다음 대사">
       <div class="place">${esc(place)}</div>
-      <div class="view">${view}</div>
+      <div class="frame${ln.card ? ' is-card' : ''}">${bg}${figure}${overlay ? `<div class="overlay${ln.news ? ' left' : ''}">${overlay}</div>` : ''}</div>
       ${box}
     </div>`;
     const text = ln.card ? '' : (ln.think ? ln.think : ln.x || '');
@@ -126,16 +151,6 @@
     return keys().every((q) => C.asked.includes(q.id));
   }
 
-  function questionsLeft() {
-    if (C.d.needQ) return Math.max(0, C.d.needQ - askedKeys());
-    return keys().filter((q) => !C.asked.includes(q.id))
-      .reduce((n, q) => n + 1 + (q.req && !held(q.req) && !C.detoured[q.id] ? 1 : 0), 0);
-  }
-
-  function actionsLeft() {
-    return questionsLeft() + Math.max(0, C.d.needRebut - refutedCount());
-  }
-
   function clockText(mins) {
     const [h, m] = C.d.clock.split(':').map(Number);
     const t = h * 60 + m + mins;
@@ -146,21 +161,18 @@
     const d = C.d;
     const used = Math.min(C.time / STEP, 7);
     const remaining = LIMIT - C.time;
-    const need = actionsLeft() * STEP;
     let meter = '';
     for (let k = 0; k < 7; k++) meter += `<i class="${k < used ? 'used' : ''}"></i>`;
     const jl = judgesLeft();
     const judgeTxt = d.judges === 0 ? '사용 불가' : (jl === Infinity ? '무제한' : `${jl}회 남음`);
-    const qTotal = C.asked.length + Object.keys(C.detoured).length + questionsLeft();
     return `<div class="hud">
       <div class="case-name"><small>${esc(d.act)} · ${esc(d.place)}</small>${esc(d.title)}</div>
       <div class="clock"><div class="now">${clockText(C.time)}</div><div class="left">남은 시간 ${remaining}분</div></div>
       <div class="meter" aria-label="35분 중 ${C.time}분 사용">${meter}</div>
       <div class="stats">
-        <span>질문 <b>${C.asked.length + Object.keys(C.detoured).length} / ${d.needQ ? d.needQ : qTotal}</b></span>
+        <span>질문 <b>${C.asked.length + Object.keys(C.detoured).length}회</b></span>
         <span>반박 <b>${refutedCount()} / ${d.needRebut}</b></span>
         <span>거짓 판별 <b>${judgeTxt}</b></span>
-        <span class="${need > remaining ? 'warn' : ''}">필요한 시간 <b>${need}분</b></span>
       </div>
     </div>`;
   }
@@ -168,6 +180,18 @@
   function tip(phase) {
     const t = C.d.tips && C.d.tips[phase];
     return t ? `<div class="tip">${t}</div>` : '';
+  }
+
+  function suspectLevel() {
+    return Math.min(refutedCount(), 3);
+  }
+
+  function banner() {
+    const key = C.d.id === 'c1' ? 'station' : (C.phase === 'prep' ? 'monitor' : 'interrogation');
+    const lvl = suspectLevel();
+    const changed = C.shownLevel !== undefined && C.shownLevel !== lvl;
+    C.shownLevel = lvl;
+    return `<div class="banner">${ART.background(key)}${ART.portrait(C.d.suspect.name, lvl, { cls: changed ? 'swap' : '' })}</div>`;
   }
 
   function profileCard(showHeld) {
@@ -196,7 +220,7 @@
     const d = C.d;
     const items = d.items.map((it) => `<button class="item${held(it.id) ? ' on' : ''}" data-item="${it.id}" aria-pressed="${held(it.id)}">
         <span class="nm">${esc(it.name)}</span><span class="ds">${esc(it.desc)}</span></button>`).join('');
-    stage.innerHTML = `${hud()}${tip('prep')}
+    stage.innerHTML = `${hud()}${banner()}${tip('prep')}
       <div class="grid2">
         ${profileCard(false)}
         <section>
@@ -245,7 +269,7 @@
     const body = done
       ? `<div class="actions"><button class="btn" id="to-note">노트 펼치기</button><span class="note">질문을 모두 마쳤습니다. 이제 노트에서 거짓을 찾아 반박하세요.</span></div>`
       : `<p class="sec-title">무엇을 물을까</p><div class="qopts">${opts}</div>`;
-    stage.innerHTML = `${hud()}${tip('ask')}
+    stage.innerHTML = `${hud()}${banner()}${tip('ask')}
       <div class="grid2">
         ${profileCard(true)}
         <section>
@@ -309,7 +333,7 @@
       return `<div class="line"><span class="who${l.s === ME ? ' me' : ''}">${esc(l.s)}</span>${esc(l.x)}</div>`;
     }).join('');
 
-    stage.innerHTML = `${hud()}${tip('note')}
+    stage.innerHTML = `${hud()}${banner()}${tip('note')}
       <div class="note-wrap">
         <section class="paper${C.judging ? ' judging' : ''}" aria-label="심문 노트">
           <h3>심문 노트 · ${esc(d.suspect.name)}</h3>
@@ -407,7 +431,8 @@
 
   function succeed() {
     const d = C.d;
-    const lines = [...C.last.filter((l) => l.s).map((l) => ({ s: l.s, x: l.x })), ...(d.success || [])];
+    const lines = [...C.last.filter((l) => l.s).map((l) => ({ s: l.s, x: l.x })), ...(d.success || [])]
+      .map((l) => (l.s === d.suspect.name && l.e === undefined ? Object.assign({ e: 3 }, l) : l));
     C = null;
     playScene(lines, () => enterFlow(G.flow + 1));
   }
