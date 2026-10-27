@@ -35,4 +35,6 @@
 - `index.html` 화면 뼈대
 - `style.css` 디자인
 - `js/scenario.js` 대사·사건 데이터 (대사 수정은 여기서)
+- `js/art.js` 인물 그림
+- `js/backdrop.js` 장소 배경 그림
 - `js/engine.js` 게임 진행 규칙
