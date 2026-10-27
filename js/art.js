@@ -1,5 +1,5 @@
 /* 물때 3 — 그림
- * 외부 이미지 없이 SVG로 장소 배경과 인물 초상을 그린다.
+ * 외부 이미지 없이 SVG로 인물 초상을 그린다. 장소 배경은 backdrop.js에서 그린다.
  * 인물은 표정 단계(0~3)를 가진다. 심문에서 반박에 성공할수록 단계가 올라간다.
  * 주인공은 이름·성별·나이를 밝히지 않으므로 그리지 않는다.
  */
@@ -238,146 +238,7 @@ const ART = (() => {
   }
 
   /* ───────── 장소 ───────── */
-  function rng(seed) {
-    let s = seed;
-    return () => { s = (s * 1664525 + 1013904223) % 4294967296; return s / 4294967296; };
-  }
-
-  function windows(x0, y0, cols, rows, w, h, gx, gy, lit, off, seed, p = 0.45) {
-    const r = rng(seed);
-    let out = '';
-    for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
-      out += `<rect x="${x0 + i * (w + gx)}" y="${y0 + j * (h + gy)}" width="${w}" height="${h}" fill="${r() < p ? lit : off}"/>`;
-    }
-    return out;
-  }
-
-  function skyline(seed, base, col, lit, count = 18) {
-    const r = rng(seed);
-    let x = 0, out = '';
-    for (let k = 0; k < count && x < 960; k++) {
-      const w = 40 + r() * 70, h = 60 + r() * 150;
-      out += `<rect x="${x}" y="${base - h}" width="${w}" height="${h}" fill="${col}"/>`;
-      out += windows(x + 6, base - h + 10, Math.floor((w - 8) / 12), Math.floor((h - 14) / 16), 6, 8, 6, 8, lit, col, seed + k * 7, 0.3);
-      x += w + r() * 8;
-    }
-    return out;
-  }
-
-  const BG = {
-    station(opts = {}) {
-      const car = opts.car
-        ? `<g transform="translate(560 300)"><path d="M0 60 L10 22 Q18 6 60 4 L170 4 Q206 6 222 26 L260 34 Q280 38 282 60 Z" fill="#1d2326"/>
-           <path d="M40 24 L56 10 L118 10 L118 26 Z M126 26 L126 10 L176 10 Q196 12 206 26 Z" fill="#8fa8b0" opacity=".6"/>
-           <circle cx="60" cy="62" r="20" fill="#0c0f10"/><circle cx="220" cy="62" r="20" fill="#0c0f10"/>
-           <circle cx="60" cy="62" r="8" fill="#555"/><circle cx="220" cy="62" r="8" fill="#555"/></g>`
-        : '';
-      return `<defs><linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fb6c4"/><stop offset="1" stop-color="#dfe3df"/></linearGradient></defs>
-        <rect width="960" height="400" fill="url(#sky1)"/>
-        <rect x="120" y="40" width="720" height="290" fill="#cfc9bb"/>
-        <rect x="120" y="40" width="720" height="14" fill="#b9b3a5"/>
-        ${windows(150, 70, 12, 3, 38, 34, 18, 22, '#5d7180', '#4a5a66', 3, 0.5)}
-        <rect x="330" y="228" width="300" height="38" fill="#1f4e8c"/>
-        <circle cx="362" cy="247" r="13" fill="#e9eef3"/><path d="M362 237 l9 6 -3 12 h-12 l-3 -12 Z" fill="#1f4e8c"/>
-        <text x="490" y="257" fill="#fff" font-size="24" font-weight="700" text-anchor="middle" font-family="sans-serif" letter-spacing="18">경 찰 서</text>
-        <rect x="410" y="268" width="140" height="62" fill="#2e3b42"/>
-        <path d="M480 268 V330" stroke="#8fa3ad" stroke-width="2"/>
-        <rect x="414" y="272" width="62" height="54" fill="#6d8794" opacity=".55"/><rect x="484" y="272" width="62" height="54" fill="#6d8794" opacity=".55"/>
-        <path d="M260 330 H700 L740 352 H220 Z" fill="#a7a296"/><path d="M220 352 H740 L780 374 H180 Z" fill="#9a958a"/><path d="M180 374 H780 L820 400 H140 Z" fill="#8e897e"/>
-        <g transform="translate(40 270)"><rect width="76" height="96" fill="#304a3e"/><rect x="-6" y="-12" width="88" height="16" fill="#3b5a4c"/>
-          <rect x="8" y="14" width="60" height="40" fill="#e9e3d2"/><path d="M14 22 h48 M14 30 h40 M14 38 h46" stroke="#555" stroke-width="2"/></g>
-        ${car}`;
-    },
-    monitor() {
-      return `<rect width="960" height="400" fill="#141b1e"/>
-        <rect x="200" y="40" width="560" height="230" fill="#55625f"/>
-        <rect x="210" y="50" width="540" height="210" fill="#7d8a85"/>
-        <path d="M210 50 L320 260 H210 Z" fill="#fff" opacity=".05"/>
-        <rect x="390" y="190" width="200" height="16" fill="#3b4441"/><rect x="400" y="206" width="10" height="54" fill="#3b4441"/><rect x="570" y="206" width="10" height="54" fill="#3b4441"/>
-        <ellipse cx="490" cy="150" rx="26" ry="30" fill="#2e3533"/><path d="M440 192 Q490 160 540 192 Z" fill="#2e3533"/>
-        <rect x="0" y="300" width="960" height="100" fill="#22292c"/>
-        <rect x="120" y="230" width="150" height="90" rx="4" fill="#0e1314"/><rect x="128" y="238" width="134" height="70" fill="#2c5f5a" opacity=".9"/>
-        <rect x="690" y="230" width="150" height="90" rx="4" fill="#0e1314"/><rect x="698" y="238" width="134" height="70" fill="#2c5f5a" opacity=".9"/>
-        <rect x="405" y="250" width="150" height="70" rx="4" fill="#0e1314"/><rect x="413" y="258" width="134" height="52" fill="#4b7d76" opacity=".9"/>
-        <circle cx="537" cy="266" r="4" fill="#c4573f"/>`;
-    },
-    interrogation() {
-      return `<defs><radialGradient id="lamp" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#e6e2cf" stop-opacity=".55"/><stop offset=".6" stop-color="#e6e2cf" stop-opacity="0"/></radialGradient></defs>
-        <rect width="960" height="400" fill="#4c5652"/>
-        <rect y="300" width="960" height="100" fill="#3a423f"/>
-        <rect x="40" y="70" width="230" height="140" fill="#1a2022"/><rect x="40" y="70" width="230" height="140" fill="none" stroke="#6b7672" stroke-width="6"/>
-        <path d="M60 80 L140 200" stroke="#fff" stroke-opacity=".06" stroke-width="30"/>
-        <rect x="860" y="40" width="40" height="22" rx="3" fill="#1e2324"/><circle cx="868" cy="51" r="4" fill="#c4573f"/>
-        <circle cx="720" cy="110" r="24" fill="#ddd8cb" stroke="#2c3230" stroke-width="4"/><path d="M720 110 V94 M720 110 L732 116" stroke="#2c3230" stroke-width="3"/>
-        <path d="M480 0 L250 400 H710 Z" fill="url(#lamp)"/>
-        <rect x="470" y="0" width="20" height="18" fill="#2a302e"/><path d="M450 18 H510 L496 34 H464 Z" fill="#2a302e"/>
-        <rect x="300" y="300" width="360" height="20" fill="#5f5a50"/><rect x="320" y="320" width="14" height="80" fill="#4a463e"/><rect x="626" y="320" width="14" height="80" fill="#4a463e"/>`;
-    },
-    office() {
-      return `<rect width="960" height="400" fill="#1a2229"/>
-        <rect x="0" y="40" width="960" height="150" fill="#0c1520"/>
-        ${skyline(11, 190, '#121c27', '#d9b768', 22)}
-        <path d="M0 40 H960 M0 115 H960 M240 40 V190 M480 40 V190 M720 40 V190" stroke="#2b3742" stroke-width="6"/>
-        <rect x="200" y="14" width="200" height="8" fill="#dfe8e6" opacity=".75"/><rect x="560" y="14" width="200" height="8" fill="#dfe8e6" opacity=".75"/>
-        <rect y="190" width="960" height="210" fill="#232c33"/>
-        ${[60, 330, 600].map((x) => `<rect x="${x}" y="280" width="240" height="14" fill="#4b4a44"/><rect x="${x + 70}" y="226" width="90" height="56" rx="3" fill="#0e1314"/><rect x="${x + 76}" y="232" width="78" height="42" fill="#3d6c79" opacity=".85"/><path d="M${x + 20} 268 h30 v12 h-30 Z" fill="#d8d0b8"/>`).join('')}
-        <rect x="870" y="200" width="70" height="200" fill="#4f5a5e"/><path d="M870 250 H940 M870 300 H940 M870 350 H940" stroke="#3a4346" stroke-width="3"/>
-        <rect x="30" y="196" width="110" height="64" rx="3" fill="#0b0f12"/><rect x="36" y="202" width="98" height="52" fill="#30475a"/><rect x="36" y="240" width="98" height="14" fill="#a43d2e" opacity=".9"/>`;
-    },
-    rooftop() {
-      return `<defs><linearGradient id="sky2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0b1420"/><stop offset=".75" stop-color="#1f3a44"/><stop offset="1" stop-color="#3f5f62"/></linearGradient></defs>
-        <rect width="960" height="400" fill="url(#sky2)"/>
-        <circle cx="790" cy="70" r="26" fill="#e8e4d4" opacity=".85"/>
-        ${skyline(29, 290, '#0e171e', '#e3c278', 20)}
-        <rect y="290" width="960" height="110" fill="#2a3134"/>
-        <g transform="translate(70 170)"><rect width="110" height="90" fill="#59626a"/><rect y="90" width="110" height="30" fill="#3d4449"/><path d="M10 120 V140 M100 120 V140" stroke="#3d4449" stroke-width="6"/></g>
-        <path d="M0 300 H960 M0 340 H960" stroke="#7d8a8e" stroke-width="4"/>
-        ${Array.from({ length: 25 }, (_, k) => `<path d="M${k * 40} 300 V340" stroke="#7d8a8e" stroke-width="3"/>`).join('')}`;
-    },
-    studio() {
-      return `<rect width="960" height="400" fill="#2b2a2e"/>
-        <rect y="310" width="960" height="90" fill="#3a332d"/>
-        <rect x="620" y="50" width="250" height="190" fill="#0e1622"/>
-        ${Array.from({ length: 11 }, (_, k) => `<rect x="620" y="${54 + k * 17}" width="250" height="8" fill="#8f8a7e" opacity=".55"/>`).join('')}
-        <rect x="620" y="50" width="250" height="190" fill="none" stroke="#5a554c" stroke-width="8"/>
-        <rect x="40" y="240" width="300" height="80" fill="#5e5a69"/><rect x="40" y="226" width="80" height="30" rx="6" fill="#d9d4c7"/><rect x="40" y="320" width="300" height="20" fill="#3d3943"/>
-        <rect x="430" y="290" width="160" height="40" fill="#4a3f36"/><rect x="450" y="200" width="120" height="86" rx="3" fill="#0b0d10"/><rect x="456" y="206" width="108" height="72" fill="#3b5d82"/>
-        <path d="M456 206 L564 278" stroke="#fff" stroke-opacity=".06" stroke-width="20"/>
-        <rect x="700" y="270" width="160" height="12" fill="#5c4d40"/><rect x="740" y="248" width="60" height="22" fill="#9fc6d6" opacity=".6"/>
-        <rect x="370" y="290" width="40" height="30" fill="#6d6253"/><rect x="372" y="276" width="36" height="14" fill="#8a7b66"/>`;
-    },
-    evidence() {
-      return `<rect width="960" height="400" fill="#262d2f"/>
-        <rect x="380" y="10" width="200" height="8" fill="#e6efe9" opacity=".8"/>
-        ${[40, 360, 680].map((x, n) => `<g transform="translate(${x} 60)"><rect width="240" height="300" fill="none" stroke="#7a8487" stroke-width="5"/>
-          ${[0, 1, 2, 3].map((r) => `<path d="M0 ${r * 75 + 70} H240" stroke="#7a8487" stroke-width="5"/>
-            ${windows(10, r * 75 + 24, 3, 1, 64, 44, 10, 0, '#a58b63', '#8d7656', n * 13 + r, 0.5)}`).join('')}</g>`).join('')}
-        <rect y="360" width="960" height="40" fill="#1c2224"/>`;
-    },
-    street() {
-      return `<defs><radialGradient id="lampst" cx=".5" cy="0" r="1"><stop offset="0" stop-color="#f1d48a" stop-opacity=".5"/><stop offset=".7" stop-color="#f1d48a" stop-opacity="0"/></radialGradient></defs>
-        <rect width="960" height="400" fill="#0d1318"/>
-        <rect x="0" y="40" width="300" height="280" fill="#182128"/>${windows(20, 60, 5, 5, 34, 26, 22, 26, '#c79a52', '#111a20', 41, 0.25)}
-        <rect x="660" y="20" width="300" height="300" fill="#151d23"/>${windows(680, 40, 5, 6, 34, 26, 22, 20, '#c79a52', '#0f171c', 43, 0.2)}
-        <rect y="320" width="960" height="80" fill="#1b2328"/>
-        <rect x="470" y="60" width="8" height="260" fill="#2f383d"/><path d="M474 60 Q474 40 520 40 L524 50" stroke="#2f383d" stroke-width="6" fill="none"/>
-        <path d="M520 50 L380 400 H700 Z" fill="url(#lampst)"/>
-        ${Array.from({ length: 60 }, (_, k) => { const r = rng(k * 31 + 7); const x = r() * 960, y = r() * 380; return `<path d="M${x} ${y} l-4 14" stroke="#9fb3bf" stroke-opacity=".35" stroke-width="1"/>`; }).join('')}
-        <ellipse cx="520" cy="360" rx="120" ry="10" fill="#f1d48a" opacity=".12"/>`;
-    },
-    hospital() {
-      return `<rect width="960" height="400" fill="#0c1218"/>
-        <rect x="200" y="40" width="560" height="230" fill="#1c252d"/>${windows(220, 60, 12, 5, 30, 22, 14, 18, '#cfe0e0', '#141c22', 53, 0.45)}
-        <rect x="420" y="222" width="120" height="30" fill="#b03a2e"/><text x="480" y="244" fill="#fff" font-size="18" font-weight="700" text-anchor="middle" font-family="sans-serif">응급실</text>
-        <rect y="270" width="960" height="130" fill="#20272c"/>
-        ${[60, 300, 660].map((x) => `<g transform="translate(${x} 300)"><path d="M0 50 L12 18 Q18 6 50 4 L130 4 Q160 6 172 22 L200 28 Q214 32 214 50 Z" fill="#11171b"/><circle cx="44" cy="52" r="15" fill="#06090b"/><circle cx="172" cy="52" r="15" fill="#06090b"/></g>`).join('')}
-        <path d="M0 300 H960" stroke="#e9e3c7" stroke-dasharray="40 30" stroke-width="3" opacity=".3"/>`;
-    },
-    dark() {
-      return `<rect width="960" height="400" fill="#0d1214"/>`;
-    },
-  };
-
+  // 배경 그림은 js/backdrop.js
   function bgKey(place) {
     const p = place || '';
     if (/옥상/.test(p)) return 'rooftop';
@@ -393,8 +254,7 @@ const ART = (() => {
   }
 
   function background(key, opts) {
-    const f = BG[key] || BG.dark;
-    return `<svg class="bg" viewBox="0 0 960 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${f(opts)}</svg>`;
+    return `<svg class="bg" viewBox="0 0 960 400" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${BACKDROP.draw(key, opts)}</svg>`;
   }
 
   return { CHARS, portrait, background, bgKey, has: (name) => !!CHARS[name] };

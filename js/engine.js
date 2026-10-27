@@ -92,14 +92,14 @@
     } else {
       const sp = sceneSpeaker(S.lines, S.i);
       if (sp) figure = ART.portrait(sp.name, sp.e, { cls: sp.talking ? 'talking' : 'idle' });
-      if (ln.news) overlay = `<div class="news"><span class="ntag">뉴스</span><h2>${esc(ln.news)}</h2></div>`;
+      if (ln.news) overlay = BACKDROP.news(ln.news, ln.x);
       const who = ln.s ? `<div class="who${ln.s === ME ? ' me' : ''}">${esc(ln.s)}</div>` : (ln.think ? `<div class="who me">${ME} · 속마음</div>` : '');
       const cls = ln.think ? 'think' : (ln.s ? '' : 'narr');
       box = `<div class="box">${who}<p class="${cls}" id="line-text"></p><span class="next" aria-hidden="true">▼</span></div>`;
     }
     stage.innerHTML = `<div class="scene" id="scene" role="button" tabindex="0" aria-label="다음 대사">
       <div class="place">${esc(place)}</div>
-      <div class="frame${ln.card ? ' is-card' : ''}">${bg}${figure}${overlay ? `<div class="overlay${ln.news ? ' left' : ''}">${overlay}</div>` : ''}</div>
+      <div class="frame${ln.card ? ' is-card' : ''}">${bg}${figure}${overlay ? `<div class="overlay${ln.news ? ' news-wrap' : ''}">${overlay}</div>` : ''}</div>
       ${box}
     </div>`;
     const text = ln.card ? '' : (ln.think ? ln.think : ln.x || '');

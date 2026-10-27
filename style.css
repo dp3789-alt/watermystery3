@@ -110,25 +110,65 @@ button:focus-visible, .stmt:focus-visible { outline: 2px solid var(--tide); outl
 .frame .portrait { position: absolute; bottom: -2%; right: 6%; height: 100%; width: auto; filter: drop-shadow(0 4px 18px rgba(0,0,0,.45)); }
 .frame .portrait.idle { filter: brightness(.72) drop-shadow(0 4px 18px rgba(0,0,0,.45)); }
 .frame .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; }
-.frame .overlay.left { place-items: center start; padding-right: 40%; }
 .frame.is-card .overlay { background: rgba(8, 11, 12, .35); }
 .banner { height: clamp(140px, 22vw, 210px); margin-bottom: 16px; }
 .banner .portrait { position: absolute; bottom: -4%; left: 50%; transform: translateX(-50%); height: 104%; width: auto; filter: drop-shadow(0 4px 18px rgba(0,0,0,.5)); }
 .banner .portrait.swap { animation: swap .5s ease-out; }
 @keyframes swap { 0% { opacity: .2; transform: translateX(-50%) translateY(6px); } 100% { opacity: 1; transform: translateX(-50%); } }
-@media (max-width: 560px) { .frame .overlay.left { padding-right: 16px; place-items: start; } .frame .portrait { right: 2%; } }
+@media (max-width: 560px) { .frame .portrait { right: 2%; } }
 .card { text-align: center; }
 .card .act { font-family: var(--display); font-weight: 800; font-size: clamp(56px, 12vw, 104px); line-height: 1; }
 .card .sub { margin-top: 12px; color: var(--muted); letter-spacing: 0.3em; font-size: 15px; }
-.news {
-  width: min(560px, 100%); border: 1px solid var(--line); background: var(--bg2);
-  padding: 18px 20px; border-radius: 2px;
+/* 뉴스: TV 화면 또는 신문 지면. 장면 틀 높이(cqh)에 맞춰 크기가 같이 줄어든다. */
+.frame .overlay.news-wrap {
+  container-type: size; padding: 0; place-items: center start;
+  background: linear-gradient(90deg, rgba(5, 8, 10, .62) 0%, rgba(5, 8, 10, .35) 60%, rgba(5, 8, 10, 0) 85%);
 }
-.news .ntag {
-  display: inline-block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.14em;
-  background: var(--lie); color: #fff; padding: 2px 8px; margin-bottom: 10px;
+.tv {
+  position: relative; height: 80cqh; aspect-ratio: 16 / 10; margin-left: 5cqh;
+  padding: 2.4cqh 2.4cqh 4.6cqh; border-radius: 2.4cqh;
+  background: linear-gradient(160deg, #2b3034, #0d0f11 55%, #181b1e);
+  box-shadow: 0 0 0 .4cqh #050607, 0 3cqh 8cqh rgba(0,0,0,.7), 0 0 14cqh rgba(80, 140, 230, .22);
 }
-.news h2 { font-family: var(--display); font-size: clamp(19px, 3.4vw, 24px); line-height: 1.4; margin: 0; text-wrap: balance; }
+.tv-led { position: absolute; right: 4cqh; bottom: 1.8cqh; width: 1.1cqh; height: 1.1cqh; border-radius: 50%; background: #e04a3a; box-shadow: 0 0 1.6cqh #e04a3a; }
+.tv-screen {
+  position: relative; height: 100%; overflow: hidden; border-radius: .8cqh; background: #081a33;
+  box-shadow: inset 0 0 6cqh rgba(0,0,0,.7);
+}
+.tv-screen::after {
+  content: ''; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(0deg, rgba(0,0,0,.18) 0 1px, transparent 1px 3px),
+    linear-gradient(125deg, rgba(255,255,255,.14), rgba(255,255,255,0) 40%);
+}
+.tv-bg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tv-logo { position: absolute; top: 3cqh; left: 3cqh; font: 700 4.4cqh/1 var(--body); color: #fff; letter-spacing: .04em; }
+.tv-logo b { color: #ffcf4a; margin-left: .3em; }
+.tv-live { position: absolute; top: 3cqh; right: 3cqh; font: 700 3.4cqh/1 var(--mono); color: #fff; background: #d23a2c; padding: .8cqh 1.4cqh; letter-spacing: .1em; }
+.tv-lower {
+  position: absolute; left: 0; right: 0; bottom: 7.4cqh; display: flex; align-items: stretch;
+  background: linear-gradient(90deg, rgba(8, 20, 40, .96), rgba(14, 34, 66, .92));
+  border-top: .5cqh solid #ffcf4a;
+}
+.tv-tag { flex: none; display: grid; place-items: center; padding: 0 2.4cqh; background: #1f5fbf; color: #fff; font: 700 4.4cqh/1 var(--body); }
+.tv-tag.flash { background: #d23a2c; animation: flash 1s steps(2) infinite; }
+@keyframes flash { 50% { background: #a12a20; } }
+.tv-lower h2 { margin: 0; padding: 1.6cqh 2.4cqh; color: #fff; font: 700 5.4cqh/1.3 var(--body); text-wrap: balance; }
+.tv-ticker { position: absolute; left: 0; right: 0; bottom: 0; height: 7.4cqh; overflow: hidden; background: #f2efe6; color: #13213a; font: 600 3.6cqh/7.4cqh var(--body); white-space: nowrap; }
+.tv-ticker span { display: inline-block; padding-left: 100%; animation: ticker 26s linear infinite; }
+.tv-ticker em { font-style: normal; color: #d23a2c; margin: 0 1.6em; }
+@keyframes ticker { to { transform: translateX(-100%); } }
+.np {
+  height: 88cqh; aspect-ratio: 4 / 3; margin-left: 6cqh; padding: 3.4cqh 4cqh; transform: rotate(-2.5deg);
+  background: #ece6d6 linear-gradient(160deg, rgba(255,255,255,.35), rgba(0,0,0,.06));
+  color: #1d1c1a; box-shadow: 0 3cqh 7cqh rgba(0,0,0,.6); display: flex; flex-direction: column; gap: 2cqh;
+}
+.np-mast { display: flex; justify-content: space-between; align-items: baseline; border-bottom: .7cqh double #1d1c1a; padding-bottom: 1.2cqh; font: 500 2.8cqh/1 var(--body); color: #4a4740; }
+.np-mast b { font: 800 7cqh/1 var(--display); color: #1d1c1a; letter-spacing: .08em; }
+.np h2 { margin: 0; font: 800 7.2cqh/1.25 var(--display); text-wrap: balance; }
+.np-body { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1.3fr; gap: 2.4cqh; }
+.np-photo { background: #8d8a80 radial-gradient(circle, rgba(0,0,0,.35) 30%, transparent 32%) 0 0 / 1.2cqh 1.2cqh; filter: contrast(1.1); }
+.np-cols { display: grid; align-content: start; gap: 1.6cqh; }
+.np-cols i { display: block; height: 1.2cqh; background: #9a958a; }
 .box {
   border: 1px solid var(--line); background: var(--panel); border-radius: 4px;
   padding: 18px 22px 26px; position: relative; min-height: 132px;
@@ -297,6 +337,6 @@ button:focus-visible, .stmt:focus-visible { outline: 2px solid var(--tide); outl
 .modal .msg { font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 1.4em; }
 
 @media (prefers-reduced-motion: reduce) {
-  .tide svg, .box .next, .opinion .caret, .banner .portrait.swap { animation: none; }
+  .tide svg, .box .next, .opinion .caret, .banner .portrait.swap, .tv-ticker span, .tv-tag.flash { animation: none; }
   .pulse { animation: none; box-shadow: inset 0 0 120px rgba(196, 87, 63, .45); }
 }
