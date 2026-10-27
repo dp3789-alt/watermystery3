@@ -686,6 +686,157 @@ const BACKDROP = (() => {
         ${finish(u, 0.9, 0.22)}`;
     },
 
+    /* ── 자취방 · 밤 (일러스트 화풍 시험판) ── */
+    studioInk(u) {
+      const L = 'stroke="#1d1a1e" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"';
+      const T = 'stroke="#1d1a1e" stroke-width="1.3" stroke-linejoin="round" stroke-linecap="round" fill="none"';
+      const r = rng(23);
+      const planks = range(9, (k) => {
+        const y = 314 + k * 10 + k * k * 0.9;
+        const off = (k * 137) % 180;
+        return `<path d="M0 ${y.toFixed(1)} H960" stroke="#2a1d14" stroke-width="1.2" opacity=".55"/>
+          ${range(6, (m) => `<path d="M${off + m * 190} ${y.toFixed(1)} v${(10 + k * 1.8).toFixed(1)}" stroke="#2a1d14" stroke-width="1" opacity=".4"/>`)}`;
+      });
+      const grain = (x, y, w, h, n) => range(n, (k) => `<path d="M${x + 4} ${(y + (k + 0.5) * h / n).toFixed(1)} q${w * 0.3} ${(r() * 3 - 1.5).toFixed(1)} ${w * 0.6} 0 t${w * 0.35} 0" stroke="#3a2618" stroke-width=".8" fill="none" opacity=".45"/>`);
+      const books = [[52, 36, '#9b3b34'], [64, 42, '#2f5a7a'], [78, 32, '#d0a548'], [90, 40, '#3f6a4c'], [103, 38, '#7a6a8e'], [116, 30, '#b8834e']];
+      return `<defs>
+          ${lin(`${u}wall`, [[0, '#4a4452'], [0.7, '#3a3542'], [1, '#2c2833']])}
+          ${lin(`${u}floor`, [[0, '#7a5a40'], [1, '#4a3424']])}
+          ${lin(`${u}out`, [[0, '#0d1428'], [1, '#26304a']])}
+          ${lin(`${u}wood`, [[0, '#a07a56'], [1, '#7e5c3e']])}
+          ${lin(`${u}woodD`, [[0, '#6a4a32'], [1, '#4f3624']])}
+          ${lin(`${u}blanket`, [[0, '#7f93ad'], [1, '#55667e']])}
+          ${lin(`${u}sheet`, [[0, '#ece6da'], [1, '#c9c2b4']])}
+          ${lin(`${u}scr`, [[0, '#cfe6ff'], [0.5, '#7fb0ea'], [1, '#4c78b4']], 1, 1)}
+          ${lin(`${u}curt`, [[0, '#7c4a42'], [0.5, '#9a5d52'], [1, '#6a3c35']], 1, 0)}
+          ${lin(`${u}tank`, [[0, '#a8dbe6'], [1, '#4f9bb0']])}
+          ${rad(`${u}lamp`, [[0, '#ffd890', 0.6], [0.5, '#ffc870', 0.18], [1, '#ffc870', 0]])}
+          ${rad(`${u}blue`, [[0, '#8ab8ff', 0.4], [1, '#8ab8ff', 0]])}
+          ${rad(`${u}shadow`, [[0, '#000', 0.55], [1, '#000', 0]])}
+          <pattern id="${u}paper" width="36" height="36" patternUnits="userSpaceOnUse"><path d="M18 6 l3 6 -3 6 -3 -6 Z" fill="#fff" opacity=".035"/><rect width="1" height="36" fill="#000" opacity=".06"/></pattern>
+          <pattern id="${u}knit" width="6" height="6" patternUnits="userSpaceOnUse"><path d="M0 3 q1.5 -2 3 0 t3 0" stroke="#2c3646" stroke-width=".6" fill="none" opacity=".35"/></pattern>
+          <pattern id="${u}keys" width="9" height="7" patternUnits="userSpaceOnUse"><rect x="1" y="1" width="7" height="5" rx="1.2" fill="#3a3f48" stroke="#14161a" stroke-width=".6"/></pattern>
+          <filter id="${u}ink" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="1.8"/></filter>
+          <filter id="${u}wash" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".012 .03" numOctaves="3" seed="9"/><feColorMatrix values="0 0 0 0 .5  0 0 0 0 .45  0 0 0 0 .4  0 0 0 .22 0"/></filter>
+          <clipPath id="${u}win"><rect x="618" y="52" width="250" height="186"/></clipPath>
+        </defs>
+        <g filter="url(#${u}ink)">
+        <!-- 벽 -->
+        <rect width="960" height="312" fill="url(#${u}wall)"/>
+        <rect width="960" height="312" fill="url(#${u}paper)"/>
+        <rect y="296" width="960" height="16" fill="#2e2a2c" ${L}/>
+        <g transform="translate(540 214)"><rect width="18" height="26" rx="2" fill="#d9d3c6" ${L}/><rect x="6" y="6" width="6" height="12" rx="1" fill="#bfb8aa" stroke="#1d1a1e" stroke-width="1"/></g>
+        <g transform="translate(330 268)"><rect width="16" height="20" rx="2" fill="#d9d3c6" ${L}/><path d="M6 7 v5 M10 7 v5" stroke="#1d1a1e" stroke-width="1.6"/></g>
+        <!-- 포스터·달력 -->
+        <g transform="translate(262 60) rotate(-2)"><rect width="86" height="116" fill="#ece5d4" ${L}/><rect x="8" y="8" width="70" height="70" fill="#34506a" stroke="#1d1a1e" stroke-width="1.4"/>
+          <circle cx="43" cy="40" r="16" fill="#e8c46a" stroke="#1d1a1e" stroke-width="1.2"/><path d="M8 66 q20 -14 36 -4 t34 -6 V78 H8 Z" fill="#1f3346" stroke="#1d1a1e" stroke-width="1.2"/>
+          <path d="M14 90 h58 M14 98 h44 M14 106 h50" ${T}/><circle cx="43" cy="-2" r="3.5" fill="#c84a3a" ${L}/></g>
+        <g transform="translate(372 64)"><rect width="74" height="92" fill="#f0eadc" ${L}/><rect width="74" height="22" fill="#b5463c" ${L}/>
+          <circle cx="16" cy="4" r="3" fill="#2a2a2a"/><circle cx="58" cy="4" r="3" fill="#2a2a2a"/>
+          ${range(5, (j) => range(7, (i) => `<rect x="${6 + i * 9.2}" y="${28 + j * 12}" width="7" height="9" fill="${i + j * 7 === 17 ? '#c94a3c' : '#d6cfbf'}"/>`))}
+          <path d="M${6 + 3 * 9.2 - 1} ${28 + 2 * 12 - 1} l9 11 M${6 + 3 * 9.2 + 8} ${28 + 2 * 12 - 1} l-9 11" stroke="#c94a3c" stroke-width="1.6"/></g>
+        <!-- 선반 -->
+        <g>
+          <rect x="40" y="96" width="210" height="10" fill="url(#${u}wood)" ${L}/>
+          <path d="M70 106 l-8 18 M220 106 l8 18" stroke="#1d1a1e" stroke-width="3"/>
+          ${books.map(([x, h, c]) => `<rect x="${x}" y="${96 - h}" width="11" height="${h}" fill="${c}" ${L}/><path d="M${x + 2} ${96 - h + 6} h7 M${x + 2} ${90} h7" stroke="#f3ead6" stroke-width="1" opacity=".6"/>`).join('')}
+          <path d="M132 96 L152 60 L166 66 L146 96 Z" fill="#4a6478" ${L}/>
+          <g transform="translate(204 74)"><path d="M-12 8 h24 l-3 14 h-18 Z" fill="#b8835a" ${L}/>
+            <path d="M0 8 Q-16 -6 -10 -18 Q-2 -6 0 8 Q4 -12 16 -16 Q12 -2 0 8 Q-2 -14 2 -26" fill="#5f9a5a" stroke="#1d1a1e" stroke-width="1.6"/></g>
+        </g>
+        <!-- 창문 -->
+        <g clip-path="url(#${u}win)">
+          <rect x="618" y="52" width="250" height="186" fill="url(#${u}out)"/>
+          <circle cx="840" cy="78" r="12" fill="#f3ecd2"/>
+          <rect x="636" y="96" width="120" height="160" fill="#151c30" stroke="#0a0d16" stroke-width="2"/>${grid(64, 646, 106, 4, 6, 18, 12, 10, 12, ['#f0c070', '#f4d898', '#a8c8f0'], '#0e1424', 0.38)}
+          <rect x="772" y="128" width="96" height="130" fill="#1a2238" stroke="#0a0d16" stroke-width="2"/>${grid(65, 780, 138, 3, 5, 18, 12, 10, 12, ['#f0c070', '#f4d898'], '#111829', 0.35)}
+          ${range(9, (k) => `<rect x="614" y="${52 + k * 9}" width="258" height="7" rx="1" fill="#d6cfbf" stroke="#1d1a1e" stroke-width="1"/>`)}
+          <path d="M712 52 V134 M780 52 V134" stroke="#8a8476" stroke-width="1.2"/>
+        </g>
+        <rect x="612" y="46" width="262" height="198" fill="none" stroke="#6e5a44" stroke-width="10"/>
+        <rect x="607" y="41" width="272" height="208" fill="none" ${L}/><rect x="617" y="51" width="252" height="188" fill="none" ${L}/>
+        <path d="M743 51 V239 M617 145 H869" stroke="#6e5a44" stroke-width="6"/><path d="M743 51 V239 M617 145 H869" stroke="#1d1a1e" stroke-width="1" opacity=".6"/>
+        <rect x="600" y="244" width="286" height="12" fill="url(#${u}wood)" ${L}/>
+        <rect x="596" y="32" width="294" height="6" rx="3" fill="#3a3a3a" ${L}/>
+        <!-- 커튼 -->
+        <path d="M586 36 Q578 150 590 300 L548 300 Q560 160 556 36 Z" fill="url(#${u}curt)" ${L}/>
+        <path d="M566 40 Q562 160 560 298 M576 40 Q574 160 574 298" ${T} opacity=".55"/>
+        <path d="M888 36 Q902 120 890 230 L912 236 Q924 130 914 36 Z" fill="url(#${u}curt)" ${L}/>
+        <!-- 바닥 -->
+        <rect y="312" width="960" height="88" fill="url(#${u}floor)"/>${planks}
+        <rect y="312" width="960" height="88" filter="url(#${u}wash)"/>
+        <ellipse cx="520" cy="392" rx="210" ry="22" fill="#7a3c3c" ${L}/><ellipse cx="520" cy="392" rx="190" ry="16" fill="none" stroke="#e8c79a" stroke-width="1.6" stroke-dasharray="6 5" opacity=".7"/>
+        <!-- 빛 -->
+        <circle cx="580" cy="220" r="250" fill="url(#${u}lamp)"/>
+        <circle cx="468" cy="214" r="170" fill="url(#${u}blue)"/>
+        <!-- 침대 -->
+        <ellipse cx="160" cy="390" rx="200" ry="12" fill="url(#${u}shadow)"/>
+        <rect x="-10" y="226" width="40" height="160" fill="url(#${u}woodD)" ${L}/>
+        <rect x="-10" y="318" width="340" height="66" fill="url(#${u}wood)" ${L}/>${grain(-10, 318, 340, 66, 5)}
+        <path d="M-10 318 V300 Q-8 286 20 284 L300 284 Q330 286 330 304 V318 Z" fill="url(#${u}sheet)" ${L}/>
+        <path d="M30 288 Q34 262 70 262 Q112 260 124 274 Q126 292 112 296 Q60 300 34 296 Z" fill="#f3eee4" ${L}/>
+        <path d="M58 270 Q76 276 96 268" ${T} opacity=".5"/>
+        <path d="M70 300 Q104 270 160 286 Q214 262 262 278 Q312 270 340 296 L344 352 Q300 362 236 356 Q170 368 110 354 Q70 352 56 330 Z" fill="url(#${u}blanket)" ${L}/>
+        <path d="M70 300 Q104 270 160 286 Q214 262 262 278 Q312 270 340 296 L344 352 Q300 362 236 356 Q170 368 110 354 Q70 352 56 330 Z" fill="url(#${u}knit)"/>
+        <path d="M110 300 Q150 318 196 296 M206 286 Q236 318 290 300 M96 330 Q160 344 248 332 M260 336 Q300 326 336 336" ${T}/>
+        <path d="M150 312 q20 -6 30 6 M236 306 q14 10 30 2" stroke="#e6eef8" stroke-width="1.4" fill="none" opacity=".5"/>
+        <g transform="translate(206 300) rotate(-12)"><rect width="22" height="38" rx="4" fill="#1b1d22" ${L}/><rect x="3" y="4" width="16" height="28" rx="2" fill="#9fc6ff"/>${glow(u, 11, 18, 18, 22, '#9fc6ff', 0.5, 8)}</g>
+        <!-- 책상 -->
+        <ellipse cx="510" cy="392" rx="160" ry="10" fill="url(#${u}shadow)"/>
+        <rect x="390" y="288" width="12" height="102" fill="url(#${u}woodD)" ${L}/>
+        <rect x="560" y="288" width="86" height="102" fill="url(#${u}woodD)" ${L}/>
+        ${[0, 1, 2].map((k) => `<rect x="566" y="${294 + k * 32}" width="74" height="26" fill="url(#${u}wood)" ${L}/><rect x="594" y="${304 + k * 32}" width="18" height="5" rx="2" fill="#2a2a2a"/>`).join('')}
+        <rect x="378" y="270" width="280" height="18" fill="url(#${u}wood)" ${L}/>${grain(378, 270, 280, 18, 2)}
+        <!-- 모니터 -->
+        <rect x="460" y="246" width="16" height="26" fill="#2a2d33" ${L}/><path d="M436 272 h64 l-6 -8 h-52 Z" fill="#2a2d33" ${L}/>
+        ${glow(u, 468, 214, 110, 62, '#7fb0ff', 0.4, 18)}
+        <rect x="400" y="168" width="136" height="88" rx="4" fill="#16181d" ${L}/>
+        <rect x="408" y="175" width="120" height="70" fill="url(#${u}scr)"/>
+        <rect x="414" y="181" width="60" height="58" fill="#f4f8ff" opacity=".85" stroke="#2a3a55" stroke-width=".8"/>
+        ${range(6, (k) => `<rect x="418" y="${187 + k * 8}" width="${24 + (k * 17) % 30}" height="2.6" fill="#3a4a66" opacity=".7"/>`)}
+        <rect x="480" y="181" width="42" height="26" fill="#1d3a66" stroke="#2a3a55" stroke-width=".8"/><rect x="484" y="198" width="34" height="5" fill="#d23a2c"/>
+        <path d="M408 175 L448 175 L408 214 Z" fill="#fff" opacity=".12"/>
+        <rect x="528" y="178" width="12" height="12" fill="#f2df7a" stroke="#1d1a1e" stroke-width="1" transform="rotate(8 534 184)"/>
+        <rect x="396" y="196" width="12" height="12" fill="#f0a6b4" stroke="#1d1a1e" stroke-width="1" transform="rotate(-6 402 202)"/>
+        <path d="M416 274 L520 274 L526 266 L422 266 Z" fill="#23262c" ${L}/><path d="M424 267 h98 v5 h-98 Z" fill="url(#${u}keys)"/>
+        <ellipse cx="540" cy="268" rx="7" ry="4" fill="#2a2d33" ${L}/>
+        <path d="M468 288 q-6 30 4 60 q8 20 -4 40" stroke="#1d1a1e" stroke-width="2.4" fill="none"/>
+        <!-- 컵라면·캔·머그 -->
+        <g transform="translate(372 244)"><path d="M0 4 L26 4 L22 26 L4 26 Z" fill="#f2ece0" ${L}/><path d="M2 12 h22" stroke="#c84a3a" stroke-width="5"/><ellipse cx="13" cy="4" rx="13" ry="3.5" fill="#d9b070" ${L}/><path d="M8 0 L20 -26 M12 0 L24 -24" stroke="#c9a46a" stroke-width="2.4"/></g>
+        <g transform="translate(546 244)"><rect width="13" height="26" rx="2" fill="#3fa5a0" ${L}/><path d="M2 8 h9" stroke="#f3ead6" stroke-width="2"/></g>
+        <g transform="translate(562 250)"><rect width="13" height="20" rx="2" fill="#3fa5a0" ${L} transform="rotate(84 6 10)"/></g>
+        <!-- 스탠드 -->
+        <path d="M612 270 L620 212 L590 188" stroke="#1d1a1e" stroke-width="6" fill="none" stroke-linecap="round"/><path d="M612 270 L620 212 L590 188" stroke="#4a4a4a" stroke-width="3" fill="none" stroke-linecap="round"/>
+        <path d="M566 176 L604 172 L600 194 L572 198 Z" fill="#3c3c3c" ${L} transform="rotate(-22 586 186)"/>
+        ${glow(u, 580, 214, 44, 26, '#ffd890', 0.85, 8)}
+        <rect x="596" y="264" width="34" height="7" rx="3" fill="#3c3c3c" ${L}/>
+        <!-- 의자 -->
+        <g transform="translate(668 236)"><ellipse cx="30" cy="154" rx="56" ry="8" fill="url(#${u}shadow)"/>
+          <path d="M6 0 Q30 -8 54 0 L58 64 Q30 72 2 64 Z" fill="#2f3440" ${L}/><path d="M14 10 Q30 6 46 10 L48 54 Q30 60 12 54 Z" fill="#3b4250" stroke="#1d1a1e" stroke-width="1.2"/>
+          <rect x="-2" y="72" width="64" height="14" rx="6" fill="#2f3440" ${L}/><path d="M30 86 V130 M30 130 L6 146 M30 130 L54 146 M30 130 L30 150" stroke="#1d1a1e" stroke-width="4"/>
+          ${[[6, 146], [54, 146], [30, 150]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r="4" fill="#2a2a2a" ${L}/>`).join('')}
+          <path d="M-6 68 Q20 58 40 74 Q60 64 70 82 L56 96 Q30 84 -2 92 Z" fill="#6b4a5a" ${L}/></g>
+        <!-- 어항 -->
+        <g transform="translate(756 268)">
+          <rect x="-6" y="0" width="190" height="14" fill="url(#${u}wood)" ${L}/><rect x="10" y="14" width="12" height="112" fill="url(#${u}woodD)" ${L}/><rect x="156" y="14" width="12" height="112" fill="url(#${u}woodD)" ${L}/>
+          <rect x="30" y="-58" width="120" height="58" fill="url(#${u}tank)" opacity=".85" ${L}/>
+          <rect x="30" y="-58" width="120" height="8" fill="#e8f6fa" opacity=".6"/>
+          <path d="M30 -8 q30 -8 60 0 t60 0 V0 H30 Z" fill="#d9c08a" stroke="#1d1a1e" stroke-width="1.2"/>
+          <path d="M52 -6 q-6 -20 2 -40 M60 -6 q6 -18 -2 -34 M126 -6 q6 -22 -4 -44" stroke="#3f7a4a" stroke-width="3.5" fill="none" stroke-linecap="round"/>
+          <g transform="translate(92 -30)"><path d="M0 0 q10 -8 20 0 q-10 8 -20 0 Z M0 0 l-8 -6 v12 Z" fill="#f08a4a" stroke="#1d1a1e" stroke-width="1.2"/><circle cx="15" cy="-1" r="1.4" fill="#1d1a1e"/></g>
+          ${range(4, (k) => `<circle cx="${110 + k * 3}" cy="${-20 - k * 9}" r="${1.5 + k * 0.4}" fill="none" stroke="#fff" stroke-width=".8" opacity=".7"/>`)}
+          <rect x="30" y="-64" width="120" height="8" fill="#2a2d33" ${L}/>
+          ${glow(u, 90, -30, 70, 30, '#a8e0ee', 0.3, 8)}
+        </g>
+        <!-- 바닥 소품 -->
+        <g transform="translate(330 360)"><path d="M0 30 L4 0 H34 L38 30 Z" fill="#5a6470" ${L}/><path d="M6 -2 q6 -10 14 -4 q8 -8 14 2" fill="#ece6d8" stroke="#1d1a1e" stroke-width="1.2"/><circle cx="12" cy="-6" r="6" fill="#ece6d8" stroke="#1d1a1e" stroke-width="1.2"/></g>
+        <path d="M690 400 Q700 372 736 374 Q760 360 790 372 Q818 370 830 392 L834 400 Z" fill="#45566a" ${L}/>
+        <path d="M708 390 Q736 380 772 388 M760 372 q10 10 24 8" ${T}/>
+        <path d="M740 400 Q752 384 778 386 Q800 384 806 400 Z" fill="#c8b48a" ${L}/>
+        </g>
+        ${finish(u, 0.7, 0.16)}`;
+    },
+
     dark(u) {
       return `<defs>${rad(`${u}d`, [[0, '#1c2629'], [1, '#080b0c']], 0.5, 0.45, 0.8)}</defs>
         <rect width="960" height="400" fill="url(#${u}d)"/>
