@@ -699,5 +699,62 @@ const BACKDROP = (() => {
     return `<defs>${common(u)}</defs>${f(u, opts)}`;
   }
 
-  return { draw, keys: Object.keys(BG) };
+  /* ───────── 뉴스 ─────────
+   * 대사 본문(x)에 신문이 나오면 신문 지면으로, 그 밖에는 TV 뉴스 화면으로 보여 준다.
+   */
+  const escHtml = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const TICKER = [
+    '심판자 사건 수사 상황 계속 전해 드립니다',
+    '경찰 "모방 범죄 가능성도 배제 안 해"',
+    '오늘 밤 전국 대체로 흐림, 일부 지역 비',
+    '시민단체 "사적 제재 미화 우려"',
+  ];
+
+  function tvScreen() {
+    const u = `nw${++seq}-`;
+    const r = rng(19);
+    return `<svg class="tv-bg" viewBox="0 0 320 180" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>${lin(`${u}st`, [[0, '#0d2a52'], [0.6, '#123a6e'], [1, '#081a33']])}
+        ${rad(`${u}sp`, [[0, '#4f8fd8', 0.55], [1, '#4f8fd8', 0]])}
+        ${lin(`${u}desk`, [[0, '#2a4a78'], [1, '#0c1a30']])}
+        <filter id="${u}b"><feGaussianBlur stdDeviation="2.5"/></filter></defs>
+      <rect width="320" height="180" fill="url(#${u}st)"/>
+      <circle cx="230" cy="40" r="120" fill="url(#${u}sp)"/>
+      <g filter="url(#${u}b)" opacity=".7">${range(14, (k) => `<rect x="${k * 24 - 4}" y="${70 - r() * 40}" width="${14 + r() * 10}" height="80" fill="#0a2246"/>`)}
+        ${range(30, () => `<circle cx="${(r() * 320).toFixed(0)}" cy="${(40 + r() * 50).toFixed(0)}" r="${(1 + r() * 2).toFixed(1)}" fill="#ffd27a" opacity=".6"/>`)}</g>
+      <rect x="0" y="56" width="320" height="2" fill="#5aa0ff" opacity=".35"/>
+      <g transform="translate(212 40)">
+        <path d="M-38 86 Q-36 48 0 42 Q36 48 38 86 Z" fill="#1b2433"/>
+        <path d="M-10 44 L0 64 L10 44 Z" fill="#e8e4dc"/><path d="M-2 50 h4 l2 18 -4 4 -4 -4 Z" fill="#8a2a2a"/>
+        <rect x="-7" y="30" width="14" height="14" fill="#c99d7c"/>
+        <ellipse cx="0" cy="18" rx="15" ry="18" fill="#d8ab88"/>
+        <path d="M-16 16 Q-18 -4 0 -2 Q18 -4 16 16 Q12 4 0 6 Q-12 4 -16 16 Z" fill="#1f1a18"/>
+        <circle cx="-5" cy="18" r="1.6" fill="#222"/><circle cx="5" cy="18" r="1.6" fill="#222"/><path d="M-4 28 q4 2 8 0" stroke="#8a5a48" stroke-width="1.4" fill="none"/>
+      </g>
+      <path d="M120 128 L320 112 L320 180 L100 180 Z" fill="url(#${u}desk)"/><path d="M120 128 L320 112" stroke="#7fb4ff" stroke-width="1.5" opacity=".7"/>
+    </svg>`;
+  }
+
+  function news(headline, text = '') {
+    const flash = /^\[속보\]\s*/.test(headline);
+    const h = escHtml(headline.replace(/^\[속보\]\s*/, ''));
+    if (/신문|가판대|1면|지면/.test(text)) {
+      return `<div class="np" aria-label="신문 기사">
+        <div class="np-mast"><span>조간</span><b>세간일보</b><span>사회</span></div>
+        <h2>${h}</h2>
+        <div class="np-body"><div class="np-photo"></div><div class="np-cols">${range(9, (k) => `<i style="width:${[100, 96, 100, 88, 100, 92, 100, 97, 60][k]}%"></i>`)}</div></div>
+      </div>`;
+    }
+    const tick = TICKER.map(escHtml).join('<em>·</em>');
+    return `<div class="tv" aria-label="TV 뉴스">
+      <div class="tv-screen">${tvScreen()}
+        <div class="tv-logo">NEWS<b>24</b></div><div class="tv-live">LIVE</div>
+        <div class="tv-lower"><span class="tv-tag${flash ? ' flash' : ''}">${flash ? '속보' : '뉴스'}</span><h2>${h}</h2></div>
+        <div class="tv-ticker"><span>${tick}<em>·</em>${tick}</span></div>
+      </div>
+      <div class="tv-led"></div>
+    </div>`;
+  }
+
+  return { draw, news, keys: Object.keys(BG) };
 })();
