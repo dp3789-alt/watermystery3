@@ -72,6 +72,14 @@
 
   function renderScene() {
     const ln = S.lines[S.i];
+    if (ln.opinion) {
+      const scene = S;
+      return showOpinion({
+        act: ln.opinion.act,
+        meta: ln.opinion.meta,
+        done: () => { S = scene; G.mode = 'scene'; S.i += 1; if (S.i < S.lines.length) renderScene(); else { const f = S.onEnd; S = null; f(); } },
+      });
+    }
     const place = placeAt(S.lines, S.i);
     setWhere(place);
     const bgKey = sceneBg(S.lines, S.i);
@@ -451,17 +459,27 @@
   }
 
   /* 3막: 어떤 입력이든 같은 결론 */
+  // 자문 의견서: 어떤 키를 누르든(모바일은 화면을 누르든) 정해진 결론이 한 글자씩 적힌다.
   function showConclusion() {
     const d = C.d;
     C = null;
+    showOpinion({
+      act: d.act,
+      meta: `피의자 ${d.suspect.name} · 구속 기간 연장 여부에 대한 의견<br>시간이 다 됐다. 결론을 적어야 한다.`,
+      done: () => enterFlow(G.flow + 1),
+    });
+  }
+
+  function showOpinion(o) {
     G.mode = 'conclude';
     G.typed = '';
-    setWhere(`${d.act} · 결론`);
+    G.opinionDone = o.done;
+    setWhere(`${o.act} · 결론`);
     stage.innerHTML = `<div class="conclude" id="conclude" role="textbox" aria-label="자문 의견 입력" tabindex="0">
       <div class="opinion">
         <div class="paper">
           <h3>자문 의견서</h3>
-          <div class="meta">피의자 ${esc(d.suspect.name)} · 구속 기간 연장 여부에 대한 의견<br>시간이 다 됐다. 결론을 적어야 한다.</div>
+          <div class="meta">${o.meta}</div>
           <div class="field"><span id="typed"></span><span class="caret"></span></div>
         </div>
         <p class="hint" id="chint">아무 키나 누르거나 화면을 눌러 결론을 적으세요.</p>
@@ -484,7 +502,9 @@
       return;
     }
     G.mode = 'scene';
-    enterFlow(G.flow + 1);
+    const done = G.opinionDone;
+    G.opinionDone = null;
+    done();
   }
 
   /* ───────── 엔딩 ───────── */
